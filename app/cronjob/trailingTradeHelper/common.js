@@ -507,7 +507,8 @@ const calculateLastBuyPrice = async (logger, symbol, order) => {
 
   const orgLastBuyPrice = _.get(lastBuyPriceDoc, 'lastBuyPrice', 0);
   const orgQuantity = _.get(lastBuyPriceDoc, 'quantity', 0);
-  const orgTotalAmount = orgLastBuyPrice * orgQuantity;
+  const orgTotalAmount =
+    _.get(lastBuyPriceDoc, 'totalAmount', 0) || orgLastBuyPrice * orgQuantity;
 
   logger.info(
     { orgLastBuyPrice, orgQuantity, orgTotalAmount },
@@ -528,7 +529,8 @@ const calculateLastBuyPrice = async (logger, symbol, order) => {
   );
   await saveLastBuyPrice(logger, symbol, {
     lastBuyPrice: newLastBuyPrice,
-    quantity: newQuantity
+    quantity: newQuantity,
+    totalAmount: newTotalAmount
   });
 
   PubSub.publish('frontend-notification', {
